@@ -1,6 +1,6 @@
 import React, { useState, useContext, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
-import { AppContext } from '../components/AppContext'
+import { AppContext } from '../context/AppContext'
 import Loading from '../components/Loading'
 import Navbar from '../components/Navbar'
 import { assets } from '../assets/assets'
