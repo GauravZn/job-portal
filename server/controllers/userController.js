@@ -28,34 +28,40 @@ export const getUserData = async (req, res) => {
 // apply for a job
 
 export const applyForJob = async (req, res) => {
-
-    const { jobId } = req.body
-    const userId = req.auth.userId
+    const { jobId } = req.body;
+    const userId = req.auth.userId;
 
     try {
-        const isAlreadyApplied = await JobApplication({ jobId, userId })
+        // Fetch all job applications by the user
+        const jobsAppliedByUser = await JobApplication.find({ userId });
+        
+        // Check if the jobId already exists in the applications
+        const isAlreadyApplied = jobsAppliedByUser.some(job => job.jobId.toString() === jobId);
 
         if (isAlreadyApplied) {
-            return res.json({ success: false, message: 'Already Applied' })
+            return res.json({ success: false, message: 'Already Applied' });
         }
 
-        const jobData = await Job.findById(jobId)
+        // Find the job details using the provided jobId
+        const jobData = await Job.findById(jobId);
 
         if (!jobData) {
-            return res.json({ success: false, message: 'Job not found' })
+            return res.json({ success: false, message: 'Job not found' });
         }
+
+        // Create a new job application
         await JobApplication.create({
             companyId: jobData.companyId,
             userId,
             jobId,
-            date: Date.now()
-        })
+            date: Date.now(),
+        });
 
-        res.json({ success: true, message: 'applied succesfully' })
+        res.json({ success: true, message: 'applied successfully' });
     } catch (error) {
-        res.json({ success: false, message: error.message })
+        res.json({ success: false, message: error.message });
     }
-}
+};
 
 // get user applied applications
 
